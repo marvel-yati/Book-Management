@@ -81,6 +81,7 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, message: `Release date must be in "YYYY-MM-DD" format` })
         }
         //validations ends
+        console.log(releasedAt)
 
         let books = { title, excerpt, userId, ISBN, category, subcategory, releasedAt }
         let bookCreated = await BookModel.create(books)
