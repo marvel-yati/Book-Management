@@ -92,7 +92,9 @@ const login = async function (req, res) {
             {
                 userId: logIn._id.toString(),
             },
-            "SECRET-OF-GROUP23"
+            "SECRET-OF-GROUP23", {
+                expiresIn: "60min"
+            }
         );
         res.setHeader("x-api-key", token);
         res.status(200).send({ status: true, message: "You are logged in", data: { token } });
