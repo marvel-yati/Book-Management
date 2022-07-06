@@ -30,7 +30,7 @@ const createBook = async function (req, res) {
                             if (!subcategory) {
                                 res.status(400).send({ status: false, msg: "subcategory is required" })
                             } else
-                                if (!reviews) {
+                                if (!releasedAt) {
                                     res.status(400).send({ status: false, msg: "reviews is required" })
                                 }
 

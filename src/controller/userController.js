@@ -16,7 +16,7 @@ const registerUser = async function (req, res) {
         }
         if (!title) { return res.status(400).send({ status: false, message: "Please Enter Title" }) }
 
-        if (title !== "string") return res.status(400).send({ status: false, message: "Please enter Title as a String" });
+        if (typeof title !== "string") return res.status(400).send({ status: false, message: "Please enter title as a String" });
 
         if (!["Mr", "Miss", "Mrs"].includes(title)) {
             return res.status(400).send({ status: false, message: "Please Enter valid title from 'Mr','Miss','Mrs'", })
@@ -24,31 +24,31 @@ const registerUser = async function (req, res) {
 
         if (!name) { return res.status(400).send({ status: false, message: "Please Enter Name" }) }
 
-        if (name !== "string") return res.status(400).send({ status: false, message: "Please enter Name as a String" })
+        if (typeof name !== "string") return res.status(400).send({ status: false, message: "Please enter Name as a String" })
 
         if (!/^\w[a-zA-Z.\s]*$/.test(name)) return res.status(400).send({ status: false, message: "The Name may contain only letters" });
 
-        if (!phone) { return res.status(400).send({ status: false, message: "Please Enter Phone" }) }
+        if (!phone) { return res.status(400).send({ status: false, message: "Please Enter Phone Number" }) }
 
-        if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(phone)) return res.status(400).send({ status: false, message: " please enter valid Mobail Number" });
+        if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(phone)) return res.status(400).send({ status: false, message: " please enter valid Phone Number" });
 
         let uniquePhoneNumber = await userModel.findOne({ phone: phone })
-        if (uniquePhoneNumber) return res.status(400).send({ status: false, message: "This Phone already exists" })
+        if (uniquePhoneNumber) return res.status(400).send({ status: false, message: "This Phone Number is already exists" })
 
         if (!email) { return res.status(400).send({ status: false, message: "Please Enter Email" }) }
-        if (email !== "string") return res.status(400).send({ status: false, message: "Please enter Email as a String" })
-        if (!/^([0-9a-z]([-\\.][0-9a-z]+))@([a-z]([-\\.][a-z]+))[\\.]([a-z]{2,9})+$/.test(email)) return res.status(400).send({ status: false, msg: "Entered email is invalid" });
+        if (typeof email != "string") return res.status(400).send({ status: false, message: "Please enter Email as a String" })
+        if (!/[a-z0-9]+@[a-z]+\.[a-z]{2,3}/.test(email)) return res.status(400).send({ status: false, msg: "Entered email is invalid" });
         let uniqueEmail = await userModel.findOne({ email: email })
         if (uniqueEmail) return res.status(400).send({ status: false, msg: "This email already exists" })
 
         if (!password) { return res.status(400).send({ status: false, message: "Please Enter Password" }) }
-        if (!(/^(?=.?[A-Z])(?=.?[a-z])(?=.?[0-9])(?=.?[#?!@$%^&*-]).{8,15}$/.test(password))) {
+        if (!(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,20}$/.test(password))) {
             return res.status(400).send({ status: false, msg: "Please use first letter in uppercase, lowercase and number with min. 8 and max. 15 length" })
         }
 
-        if (address.street !== "string") return res.status(400).send({ status: false, message: "Please enter Street as a String" })
-        if (address.city !== "string") return res.status(400).send({ status: false, message: "Please enter City as a String" })
-        if (address.pincode !== "string") return res.status(400).send({ status: false, message: "Please enter Pincode as a String" })
+        if (typeof address.street !== "string") return res.status(400).send({ status: false, message: "Please enter Street as a String" })
+        if (typeof address.city !== "string") return res.status(400).send({ status: false, message: "Please enter City as a String" })
+        if (typeof address.pincode !== "string") return res.status(400).send({ status: false, message: "Please enter Pincode as a String" })
         if (!/^\d{6}$/.test(address.pincode)) { return res.status(400).send({ status: false, message: "only number is accepted in pincode ", }); }
 
 
@@ -65,26 +65,28 @@ const registerUser = async function (req, res) {
 };
 
 
+const isRequestBodyValid = function (requestBody) {
+    return Object.keys(requestBody).length > 0
+}
 
-const login = async function(req, res)
-{
-    try{
+const login = async function (req, res) {
+    try {
         const credentials = req.body;
-        if(!isRequestBodyValid(credentials))
-        {
-            res.status(400).send({status: false, msg: "Please provide login credentials"});
+        if (!isRequestBodyValid(credentials)) {
+            res.status(400).send({ status: false, message: "Please provide login credentials" });
             return;
         }
-        if(!validator.validate(credentials.email))
-        {
-            res.status(400).send({status: false, msg: "Please provide valid Email Id"});
-            return;
+        // if (!validator.validate(credentials.email)) {
+        //     res.status(400).send({ status: false, msg: "Please provide valid Email Id" });
+        //     return;
+        // }
+        const { email, password } = credentials;
+        if(!(/[a-z0-9]+@[a-z]+\.[a-z]{2,3}/).test(email)){
+            return res.status(400).send({ status: false, message: "Please provide valid Email Id" });
         }
-        const {name, password } = credentials;
-        let logIn = await userModel.findOne({name, password}); 
-        if(!logIn)
-        {
-            return res.status(400).send({status: false, msg: "Name and password is not correct"});
+        let logIn = await userModel.findOne({ email, password });
+        if (!logIn) {
+            return res.status(400).send({ status: false, message: "Email and password is not correct" });
         }
         const token = jwt.sign(
             {
@@ -92,11 +94,11 @@ const login = async function(req, res)
             },
             "SECRET-OF-GROUP23"
         );
-        res.setHeader("x-api-key",token);
-        res.status(200).send({status: true, msg: "You are logged in!!!", data: {token}});
+        res.setHeader("x-api-key", token);
+        res.status(200).send({ status: true, message: "You are logged in", data: { token } });
     }
-    catch(err){
-        res.status(500).send({status: false, msg: err.message});    
+    catch (err) {
+        res.status(500).send({ status: false, message: err.message });
     }
 }
 
