@@ -49,7 +49,7 @@ const registerUser = async function (req, res) {
         if (typeof address.street !== "string") return res.status(400).send({ status: false, message: "Please enter Street as a String" })
         if (typeof address.city !== "string") return res.status(400).send({ status: false, message: "Please enter City as a String" })
         if (typeof address.pincode !== "string") return res.status(400).send({ status: false, message: "Please enter Pincode as a String" })
-        if (!/^\d{6}$/.test(address.pincode)) { return res.status(400).send({ status: false, message: "only number is accepted in pincode ", }); }
+        if (!/^\d{6}$/.test(address.pincode)) { return res.status(400).send({ status: false, message: "only number is accepted in pincode and Pincode length must be equal to 6", }); }
 
 
 
