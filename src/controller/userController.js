@@ -42,7 +42,7 @@ const registerUser = async function (req, res) {
         if (uniqueEmail) return res.status(400).send({ status: false, msg: "This email already exists" })
 
         if (!password) { return res.status(400).send({ status: false, message: "Please Enter Password" }) }
-        if (!(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,20}$/.test(password))) {
+        if (!(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,15}$/.test(password))) {
             return res.status(400).send({ status: false, msg: "Please use first letter in uppercase, lowercase and number with min. 8 and max. 15 length" })
         }
 
