@@ -109,32 +109,20 @@ const createBook = async function (req, res) {
 const getBooks = async function (req, res) {
     try {
         let data = req.query;
-        // let userId = req.query.userId
 
+        if (data.userId) {
+            if (!mongoose.isValidObjectId(data.userId)) {
+                return res.status(400).send({ status: false, msg: "Please Enter authorID as a valid ObjectId" })
+            }
+        }
         const bookDetail = await bookModel
             .find({ $and: [data, { isDeleted: false }] })
             .select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 })
             .sort({ title: 1 })
 
-            if (bookDetail.length == 0) return res.status(404).send({ status: false, msg: "No Book found" });
-
-            // if (data.category){
-            //     if(typeof data.category !== 'string') return res.status(400).send({ status: false, msg: "Please enter Category as a String" });}
-          
-                
-        // if (data.userId) {
-        //     if (!mongoose.isValidObjectId(data.userId)) {
-        //         return res.status(400).send({ status: false, msg: "Please Enter authorID as a valid ObjectId" })
-        //     }
-        // }
-
-        // if (userId.length != 24) {
-        //     return res.status(400).send({msg: "invalid blog id"})
-        // }
-
-        // let blogs = await bookModel.find({ $and: [data, { isDeleted: false }] });
-         
-
+        if (bookDetail.length == 0) {
+            return res.status(404).send({ status: false, msg: "No Book found" });
+        }
 
         if (bookDetail.length > 0) {
             return res.status(200).send({ status: true, message: "Books List", data: bookDetail });
@@ -155,20 +143,20 @@ const getbookId = async function (req, res) {
     try {
         let bookId = req.params.bookId
 
-        if(!isvalidObjectId(bookId)){
-            return res.status(400).send({ status: false, message: "please enter valid bookId"})
+        if (!isvalidObjectId(bookId)) {
+            return res.status(400).send({ status: false, message: "please enter valid bookId" })
         }
-        
-        let bookDetails = await bookModel.findOne({ _id: bookId, isDeleted: false})
 
-        if(!bookDetails) {
-            return res.status(404).send({ status: false, message: "No Book found"})
+        let bookDetails = await bookModel.findOne({ _id: bookId, isDeleted: false })
+
+        if (!bookDetails) {
+            return res.status(404).send({ status: false, message: "No Book found" })
         }
 
         // const review = await reviewModel.find({ bookId : bookId, isDeleted: false})
-        const bookDetailsFinal = {bookDetails}
+        const bookDetailsFinal = { bookDetails }
 
-        return res.status(200).send({ status: true, message: 'Books list', data: bookDetailsFinal})
+        return res.status(200).send({ status: true, message: 'Books list', data: bookDetailsFinal })
     }
     catch (err) {
 
