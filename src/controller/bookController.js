@@ -208,19 +208,6 @@ const updateBooks = async function (req, res) {
             return res.status(400).send({ status: false, message: "this title is already use, please entered a unique title" })
         }
 
-        //ISBN validation
-        if (!isValid(data.ISBN)) {
-            return res.status(400).send({ status: false, message: "Please enter ISBN" })
-        }
-        if (!/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/.test(ISBN)) {
-            return res.status(400).send({ status: false, message: "The ISBN is not valid" });
-        }
-
-        let usedISBN = await bookModel.findOne({ ISBN: ISBN })
-        if (usedISBN) {
-            return res.status(400).send({ status: false, message: "Book with this ISBN is already exist" })
-        }
-
         //excerpt validation
         if (!isValid(data.excerpt)) {
             return res.status(400).send({ statu: false, message: "Please enter excerpt" })
@@ -234,6 +221,18 @@ const updateBooks = async function (req, res) {
             return res.status(400).send({ status: false, message: `Release date must be in "YYYY-MM-DD" format` })
         }
 
+        //ISBN validation
+        if (!isValid(data.ISBN)) {
+            return res.status(400).send({ status: false, message: "Please enter ISBN" })
+        }
+        if (!/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/.test(ISBN)) {
+            return res.status(400).send({ status: false, message: "The ISBN is not valid" });
+        }
+
+        let usedISBN = await bookModel.findOne({ ISBN: ISBN })
+        if (usedISBN) {
+            return res.status(400).send({ status: false, message: "Book with this ISBN is already exist" })
+        }
 
         //successfully book update
         let updateBook = await bookModel.findByIdAndUpdate({ _id: id }, { title: data.title, ISBN: data.ISBN, excerpt: data.excerpt, releaseDate: data.releaseDate }, { new: true })
