@@ -14,6 +14,10 @@ router.post("/login", userController.login)
 
 //--------------------------Book Api----------------------------------
 router.post("/books", middleware.authentication, bookController.createBook)
+router.get("/books", middleware.authentication, bookController.getBooks)
+router.get("/books/:bookId", middleware.authentication, bookController.getbookId)
+router.put("/books/:bookId", middleware.authentication, bookController.updateBooks)
+router.delete("/books/:bookId", middleware.authentication, bookController.deleteBook)
 
 
 //--------------------------Review Api----------------------------------
