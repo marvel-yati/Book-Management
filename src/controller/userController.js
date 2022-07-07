@@ -80,7 +80,7 @@ const registerUser = async function (req, res) {
         }
 
         //Address validation
-        if (isValid(address)) {
+        if (!isValid(address)) {
             return res.satus(400).send({ status: false, message: "Please Enter Address" })
         }
         if (address) {
@@ -145,7 +145,7 @@ const login = async function (req, res) {
                 userId: logIn._id.toString(),
             },
             "SECRET-OF-GROUP23", {
-            expiresIn: "60min" //token validate only for 60 mins after creation
+            //expiresIn: "60min" //token validate only for 60 mins after creation
         }
         );
         res.setHeader("x-api-key", token);

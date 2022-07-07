@@ -85,7 +85,7 @@ const createBook = async function (req, res) {
 
         //releaseAt validation
         if (!isValid(releasedAt)) {
-            res.status(400).send({ status: false, message: "reviews is required" })
+            res.status(400).send({ status: false, message: "releaseAt date is required" })
         }
         if (!/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(releasedAt)) {
             return res.status(400).send({ status: false, message: `Release date must be in "YYYY-MM-DD" format` })
@@ -199,7 +199,7 @@ const updateBooks = async function (req, res) {
         }
 
         //title validation
-        if (data.title && !isValid(data.title)) {
+        if (!isValid(data.title)) {
             return res.status(400).send({ status: false, message: "Please enter the title" })
         }
 
@@ -209,8 +209,8 @@ const updateBooks = async function (req, res) {
         }
 
         //ISBN validation
-        if (ISBN && !isValid(data.ISBN)) {
-            return res.status(4500).send({ status: false, message: "Please enter ISBN" })
+        if (!isValid(data.ISBN)) {
+            return res.status(400).send({ status: false, message: "Please enter ISBN" })
         }
         if (!/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/.test(ISBN)) {
             return res.status(400).send({ status: false, message: "The ISBN is not valid" });
@@ -222,13 +222,22 @@ const updateBooks = async function (req, res) {
         }
 
         //excerpt validation
-        if (data.excerpt && !isValid(data.excerpt)) {
+        if (!isValid(data.excerpt)) {
             return res.status(400).send({ statu: false, message: "Please enter excerpt" })
         }
 
+        //releasedAt validation
+        if (!isValid(data.releaseDate)) {
+            return res.status(400).send({ statu: false, message: "Please enter release date" })
+        }
+        if (!/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(data.releaseDate)) {
+            return res.status(400).send({ status: false, message: `Release date must be in "YYYY-MM-DD" format` })
+        }
+
+
         //successfully book update
         let updateBook = await bookModel.findByIdAndUpdate({ _id: id }, { title: data.title, ISBN: data.ISBN, excerpt: data.excerpt, releaseDate: data.releaseDate }, { new: true })
-        return res.status(200).send({ status: true, message: "Book Update successfully", data: updateBook })
+        return res.status(200).send({ status: true, message: "Book Update Successfully", data: updateBook })
 
     }
     catch (err) {
