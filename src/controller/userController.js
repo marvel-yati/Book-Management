@@ -100,8 +100,8 @@ const registerUser = async function (req, res) {
             }
         }
 
-    //Successfully User Registration
-    const createUser = await userModel.create(getBodyData);
+        //Successfully User Registration
+        const createUser = await userModel.create(getBodyData);
         return res.status(201).send({ status: true, message: "Success", data: createUser });
 
     } catch (error) {
@@ -121,16 +121,16 @@ const login = async function (req, res) {
 
         const { email, password } = credentials;
         //Email validation
-        if(!isValid(email)){
-            return req.status(400).send({ status: false, message: "Email is required"})
+        if (!isValid(email)) {
+            return req.status(400).send({ status: false, message: "Email is required" })
         }
         if (!(/[a-z0-9]+@[a-z]+\.[a-z]{2,3}/).test(email)) {
             return res.status(400).send({ status: false, message: "Please provide valid Email Id" });
         }
 
         //Password Validation
-        if(!isValid(password)){
-            return req.status(400).send({ status: false, message: "Password is required"})
+        if (!isValid(password)) {
+            return req.status(400).send({ status: false, message: "Password is required" })
         }
 
         //user present or not
