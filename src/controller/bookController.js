@@ -112,7 +112,7 @@ const getBooks = async function (req, res) {
 
         if (data.userId) {
             if (!mongoose.isValidObjectId(data.userId)) {
-                return res.status(400).send({ status: false, msg: "Please Enter authorID as a valid ObjectId" })
+                return res.status(400).send({ status: false, msg: "Please Enter a valid userID" })
             }
         }
         const bookDetail = await bookModel

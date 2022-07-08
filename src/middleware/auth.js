@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken')
 const bookModel = require('../models/bookModel')
 const mongoose = require('mongoose')
-// const userModel = require('../models/userModel')
 
 //===================================== Authentication ==========================================
 
@@ -40,7 +39,7 @@ const authoization = async function (req, res, next) {
 
         if (bookId) {
             if (!mongoose.isValidObjectId(bookId)) {
-                return res.status(400).send({ status: false, msg: "Please Enter authorID as a valid ObjectId" })
+                return res.status(400).send({ status: false, msg: "Please Enter a valid bookID" })
             }
         }
 
