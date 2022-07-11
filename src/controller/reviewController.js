@@ -1,7 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const bookModel = require("../models/bookModel");
 const reviewModel = require("../models/reviewModel")
-// const userModel = require("../models/userModel");
 
 
 
@@ -38,8 +37,8 @@ const createReviews = async function (req, res) {
             return res.status(400).send({ status: false, message: "Please enter a valid bookId in request body" })
         }
 
-        if(bookId !== id){
-            return res.status(400).send({ status: false, message: "Params bookId and requested bookID not same"})
+        if (bookId !== id) {
+            return res.status(400).send({ status: false, message: "Params bookId and requested bookID not same" })
         }
 
         if (!bookId) {
@@ -50,11 +49,6 @@ const createReviews = async function (req, res) {
         if (!bookAvailable) {
             return res.status(404).send({ status: false, message: "Book doesn't exist" })
         }
-
-        // ask TA -- requied or not
-        // if (!isValid(data.reviewedBy)) {
-        //     return res.status(400).send({ status: false, message: "Please Enter your name" });
-        // }
 
         if (!/^\w[a-zA-Z.\s]*$/.test(data.reviewedBy)) {
             return res.status(400).send({ status: false, message: "The Name may contain only letters" })
@@ -70,6 +64,12 @@ const createReviews = async function (req, res) {
 
         if (!isValid(data.reviewedAt)) {
             return res.status(400).send({ status: false, message: "ReviewedAt is required" });
+        }
+
+        if (data.review) {
+            if (!isValid(data.review)) {
+                return res.status(400).send({ status: false, message: "Review cann't be empty" });
+            }
         }
 
         data.reviewedAt = Date.now()
@@ -119,8 +119,8 @@ const updateReviews = async function (req, res) {
         }
 
         if (data.review) {
-            if (typeof data.review != "string") {
-                return res.status(400).send({ status: false, msg: "Please Enter Review in String" });
+            if (!isValid(data.review)) {
+                return res.status(400).send({ status: false, msg: "Please Enter Review" });
             }
         }
         if (data.rating) {
@@ -135,7 +135,6 @@ const updateReviews = async function (req, res) {
         }
 
         let updateReview = await reviewModel.findOneAndUpdate({ _id: reviewId }, { $set: { review: data.review, rating: data.rating, reviewedBy: data.reviewedBy, reviewedAt: Date.now() } }, { new: true })
-        //review date update karna hai yeah nehi
         let finalData = ({ _id: updateReview.id, bookId: updateReview.bookId, reviewedBy: updateReview.reviewedBy, reviewedAt: updateReview.reviewedAt, rating: updateReview.rating, review: updateReview.review })
         res.status(200).send({ status: true, msg: "Review Updated Successfully", data: finalData });
     }

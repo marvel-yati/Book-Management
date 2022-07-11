@@ -145,7 +145,7 @@ const login = async function (req, res) {
                 userId: logIn._id.toString(),
             },
             "SECRET-OF-GROUP23", {
-            //expiresIn: "60min" //token validate only for 60 mins after creation
+            // expiresIn: "60min" =================================
         }
         );
         res.setHeader("x-api-key", token);

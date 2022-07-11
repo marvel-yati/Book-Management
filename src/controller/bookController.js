@@ -2,7 +2,7 @@ const { default: mongoose } = require("mongoose");
 const bookModel = require("../models/bookModel");
 const userModel = require("../models/userModel");
 const reviewModel = require("../models/reviewModel")
-//const jwt = require("jsonwebtoken");
+
 
 
 //Validation 
@@ -37,7 +37,6 @@ const createBook = async function (req, res) {
         if (!isValid(title)) {
             res.status(400).send({ status: false, message: "title field is required" })
         }
-        if (!/^\w[a-zA-Z.\s]*$/.test(title)) return res.status(400).send({ status: false, message: "The title must contain only letters" });
 
         const isTitleAlreadyExist = await bookModel.findOne({ title: title })
         if (isTitleAlreadyExist) {
@@ -153,7 +152,7 @@ const getbookId = async function (req, res) {
             return res.status(404).send({ status: false, message: "No Book found" })
         }
 
-        const reviews = await reviewModel.find({ bookId : bookId, isDeleted: false}).select({ _id : 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1})
+        const reviews = await reviewModel.find({ bookId: bookId, isDeleted: false }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
         const bookDetailsFinal = { bookDetails, reviewData: reviews }
 
         return res.status(200).send({ status: true, message: 'Books list', data: bookDetailsFinal })
@@ -186,13 +185,24 @@ const updateBooks = async function (req, res) {
 
         //correct details to update or not
         if (!(data.title || data.ISBN || data.excerpt || data.releaseDate)) {
-            return res.status(400).send({ status: false, message: "Please enter correcct details to update" })
+            return res.status(400).send({ status: false, message: "Please enter the correct details to update" })
         }
 
         //title validation
-        let usedTitle = await bookModel.findOne({ title: data.title })
-        if (usedTitle) {
-            return res.status(400).send({ status: false, message: "this title is already use, please entered a unique title" })
+        if (data.title) {
+            if (!isValid(data.title)) {
+                return res.status(400).send({ status: false, message: "title can not be empty" })
+            }
+            let usedTitle = await bookModel.findOne({ title: data.title })
+            if (usedTitle) {
+                return res.status(400).send({ status: false, message: "this title is already use, please entered a unique title" })
+            }
+        }
+
+        if (data.excerpt) {
+            if (!isValid(data.excerpt)) {
+                return res.status(400).send({ status: false, message: "excerpt can not be empty" })
+            }
         }
 
         //releasedAt validation
@@ -234,7 +244,7 @@ const deleteBook = async function (req, res) {
         if (!book) { return res.status(404).send({ status: false, message: "book does not exist" }) }
 
         await bookModel.updateMany({ _id: bookId, isDeleted: false }, { $set: { isDeleted: true, deletedAt: new Date() } })
-        await reviewModel.updateMany({bookId: bookId}, ({$set:{isDeleted: true}}))
+        await reviewModel.updateMany({ bookId: bookId }, ({ $set: { isDeleted: true } }))
 
         return res.status(200).send({ status: true, message: "Book deleted successfully" })
 
