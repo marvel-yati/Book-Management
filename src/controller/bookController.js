@@ -1,7 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const bookModel = require("../models/bookModel");
-const BookModel = require("../models/bookModel");
 const userModel = require("../models/userModel");
+const reviewModel = require("../models/reviewModel")
 //const jwt = require("jsonwebtoken");
 
 
@@ -93,7 +93,7 @@ const createBook = async function (req, res) {
 
         //Successfully creation of book
         let books = { title, excerpt, userId, ISBN, category, subcategory, releasedAt }
-        let bookCreated = await BookModel.create(books)
+        let bookCreated = await bookModel.create(books)
         res.status(201).send({ status: true, message: "Book created successfully", data: bookCreated })
 
     } catch (err) {
@@ -153,8 +153,8 @@ const getbookId = async function (req, res) {
             return res.status(404).send({ status: false, message: "No Book found" })
         }
 
-        // const review = await reviewModel.find({ bookId : bookId, isDeleted: false})
-        const bookDetailsFinal = { bookDetails }
+        const reviews = await reviewModel.find({ bookId : bookId, isDeleted: false}).select({ _id : 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1})
+        const bookDetailsFinal = { bookDetails, reviewData: reviews }
 
         return res.status(200).send({ status: true, message: 'Books list', data: bookDetailsFinal })
     }
@@ -233,8 +233,8 @@ const deleteBook = async function (req, res) {
         let book = await bookModel.findOne({ _id: bookId, isDeleted: false })
         if (!book) { return res.status(404).send({ status: false, message: "book does not exist" }) }
 
-        await bookModel.updateMany({ _id: bookId, isDeleted: false }, { $set: { isDeleted: true, deletedAt: new Date() } }) //reviewModel hoga
-        // await reviewModel.updateMany({bookId: bookId}, ({$set:{isDeleted: true}}))
+        await bookModel.updateMany({ _id: bookId, isDeleted: false }, { $set: { isDeleted: true, deletedAt: new Date() } })
+        await reviewModel.updateMany({bookId: bookId}, ({$set:{isDeleted: true}}))
 
         return res.status(200).send({ status: true, message: "Book deleted successfully" })
 

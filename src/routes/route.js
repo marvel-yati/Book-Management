@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const bookController = require("../controller/bookController")
 const userController = require("../controller/userController")
-// const reviewController = require("../controller/reviewController")
+const reviewController = require("../controller/reviewController")
 const middleware = require("../middleware/auth")
 
 
@@ -21,6 +21,9 @@ router.delete("/books/:bookId", middleware.authentication, middleware.authoizati
 
 
 //--------------------------Review Api----------------------------------
+router.post("/books/:bookId/review", reviewController.createReviews)
+router.put("/books/:bookId/review/:reviewId", reviewController.updateReviews)
+router.delete("/books/:bookId/review/:reviewId", reviewController.deleteReview)
 
 
 module.exports = router
