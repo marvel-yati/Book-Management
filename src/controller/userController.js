@@ -3,8 +3,8 @@ const jwt = require("jsonwebtoken");
 
 //Validation
 const isValid = function (value) {
-    if (typeof value === 'undefined' || value == null) return false
-    if (typeof value == 'string' && value.trim().length === 0) return false
+    if (typeof value == 'undefined' || value == null) return false
+    if (typeof value == 'string' && value.trim().length == 0) return false
     return true
 }
 
@@ -145,7 +145,7 @@ const login = async function (req, res) {
                 userId: logIn._id.toString(),
             },
             "SECRET-OF-GROUP23", {
-            // expiresIn: "60min" =================================
+            expiresIn: "60min"
         }
         );
         res.setHeader("x-api-key", token);

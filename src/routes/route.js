@@ -13,7 +13,7 @@ router.post("/register", userController.registerUser)
 router.post("/login", userController.login)
 
 //--------------------------Book Api----------------------------------
-router.post("/books", middleware.authentication, bookController.createBook)
+router.post("/books", middleware.authentication, middleware.authoization, bookController.createBook)
 router.get("/books", middleware.authentication, bookController.getBooks)
 router.get("/books/:bookId", middleware.authentication, bookController.getbookId)
 router.put("/books/:bookId", middleware.authentication, middleware.authoization, bookController.updateBooks)
@@ -24,6 +24,16 @@ router.delete("/books/:bookId", middleware.authentication, middleware.authoizati
 router.post("/books/:bookId/review", reviewController.createReviews)
 router.put("/books/:bookId/review/:reviewId", reviewController.updateReviews)
 router.delete("/books/:bookId/review/:reviewId", reviewController.deleteReview)
+
+
+
+// global route>>>>>>>>>>
+router.all("/**", function (req, res) {
+    res.status(400).send({
+        status: false,
+        msg: "The api you request is not available"
+    })
+})
 
 
 module.exports = router

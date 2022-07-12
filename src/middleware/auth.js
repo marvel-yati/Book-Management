@@ -33,6 +33,7 @@ const authoization = async function (req, res, next) {
     try {
         let token = req.header('x-api-key')
         let bookId = req.params.bookId
+        let bodyUserId = req.body.userId
         if (!token) {
             return res.status(401).send({ status: false, message: "Authentication token is required in header" })
         }
@@ -48,6 +49,11 @@ const authoization = async function (req, res, next) {
         let findBook = await bookModel.findById(bookId);
         if (findBook) {
             if (decodedToken.userId != findBook.userId) {
+                return res.status(403).send({ status: false, msg: "User is not authorized to access this data" });
+            }
+        }
+        if (bodyUserId) {
+            if (bodyUserId !== decodedToken.userId) {
                 return res.status(403).send({ status: false, msg: "User is not authorized to access this data" });
             }
         }
