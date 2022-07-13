@@ -78,8 +78,6 @@ const createReviews = async function (req, res) {
             }
         }
 
-        // data.reviewedAt = Date.now()
-
         let reviewCreated = await reviewModel.create(data)
         let finalData = ({ _id: reviewCreated.id, bookId: reviewCreated.bookId, reviewedBy: reviewCreated.reviewedBy, reviewedAt: reviewCreated.reviewedAt, rating: reviewCreated.rating, review: reviewCreated.review })
 
