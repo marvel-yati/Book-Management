@@ -43,6 +43,12 @@ const authoization = async function (req, res, next) {
                 return res.status(400).send({ status: false, msg: "Please Enter a valid bookID" })
             }
         }
+        if (bodyUserId) {
+            if (!mongoose.isValidObjectId(bodyUserId)) {
+                return res.status(400).send({ status: false, msg: "Please Enter a valid UserID" })
+            }
+        }
+
 
         let decodedToken = jwt.verify(token, "SECRET-OF-GROUP23")
 
@@ -52,6 +58,7 @@ const authoization = async function (req, res, next) {
                 return res.status(403).send({ status: false, msg: "User is not authorized to access this data" });
             }
         }
+
         if (bodyUserId) {
             if (bodyUserId !== decodedToken.userId) {
                 return res.status(403).send({ status: false, msg: "User is not authorized to access this data" });

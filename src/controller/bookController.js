@@ -209,7 +209,7 @@ const updateBooks = async function (req, res) {
         //releasedAt validation
         if (data.releaseDate) {
             if (!/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(data.releaseDate)) {
-                return res.status(400).send({ status: false, message: `Release date must be in "YYYY-MM-DD" format` })
+                return res.status(400).send({ status: false, message: `Release date must be in "YYYY-MM-DD" format or must be a valid date` })
             }
         }
 

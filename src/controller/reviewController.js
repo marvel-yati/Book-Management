@@ -58,7 +58,7 @@ const createReviews = async function (req, res) {
             return res.status(400).send({ status: false, message: "Please enter your rating" });
         }
 
-        if (!(/[1-5]/).test(data.rating)) {
+        if ((data.rating < 1 || data.rating > 5)) {
             return res.status(400).send({ status: false, message: "Rating should be in Number and range must be 1-5" })
         }
 
@@ -72,7 +72,13 @@ const createReviews = async function (req, res) {
             }
         }
 
-        data.reviewedAt = Date.now()
+        if (data.reviewedAt) {
+            if (!/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(data.reviewedAt)) {
+                return res.status(400).send({ status: false, message: `Release date must be in "YYYY-MM-DD" format or must be a valid date` })
+            }
+        }
+
+        // data.reviewedAt = Date.now()
 
         let reviewCreated = await reviewModel.create(data)
         let finalData = ({ _id: reviewCreated.id, bookId: reviewCreated.bookId, reviewedBy: reviewCreated.reviewedBy, reviewedAt: reviewCreated.reviewedAt, rating: reviewCreated.rating, review: reviewCreated.review })
@@ -125,10 +131,8 @@ const updateReviews = async function (req, res) {
                 return res.status(400).send({ status: false, msg: "Please Enter Review" });
             }
         }
-        if (data.rating) {
-            if (!(/[1-5]/).test(data.rating)) {
-                return res.status(400).send({ status: false, message: "Rating should be in Number and range must be 1-5" })
-            }
+        if ((data.rating < 1 || data.rating > 5)) {
+            return res.status(400).send({ status: false, message: "Rating should be in Number and range must be 1-5" })
         }
         if (data.reviewedBy) {
             if (!/^\w[a-zA-Z.\s]*$/.test(data.reviewedBy)) {
@@ -137,9 +141,12 @@ const updateReviews = async function (req, res) {
         }
 
         let updateReview = await reviewModel.findOneAndUpdate({ _id: reviewId }, { $set: { review: data.review, rating: data.rating, reviewedBy: data.reviewedBy, reviewedAt: Date.now() } }, { new: true })
+
         let finalData = ({ _id: updateReview.id, bookId: updateReview.bookId, reviewedBy: updateReview.reviewedBy, reviewedAt: updateReview.reviewedAt, rating: updateReview.rating, review: updateReview.review })
-        let book = await bookModel.findOne({ _id: bookId }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, subcategory: 1, isDeleted: 1, reviews: 1, releasedAt: 1, createdAt: 1, updatedAt: 1 })
+
+        let book = await bookModel.findOne({ _id: bookId })
         let final = ({ _id: book._id, title: book.title, excerpt: book.excerpt, userId: book.userId, category: book.category, subcategory: book.subcategory, isDeleted: book.isDeleted, reviews: book.reviews, releasedAt: book.releasedAt, createdAt: book.createdAt, updatedAt: book.updatedAt, reviewData: finalData })
+        
         res.status(200).send({ status: true, msg: "Review Updated Successfully", data: final });
     }
     catch (err) {

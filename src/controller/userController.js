@@ -81,7 +81,7 @@ const registerUser = async function (req, res) {
 
         //Address validation
         if (!isValid(address)) {
-            return res.satus(400).send({ status: false, message: "Please Enter Address" })
+            return res.status(400).send({ status: false, message: "Please Enter Address" })
         }
         if (address) {
             if (!isValid(address.street)) {
