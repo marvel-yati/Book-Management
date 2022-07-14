@@ -1,11 +1,19 @@
 const express = require('express')
+const aws = require("aws-sdk")
 const router = express.Router()
 const bookController = require("../controller/bookController")
 const userController = require("../controller/userController")
 const reviewController = require("../controller/reviewController")
 const middleware = require("../middleware/auth")
+const uploadFile = require("../controller/awsFileUpload")
 
 
+
+aws.config.update({
+    accessKeyId: "AKIAY3L35MCRVFM24Q7U",
+    secretAccessKey: "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",
+    region: "ap-south-1"
+})
 
 
 //--------------------------user Api----------------------------------
@@ -13,7 +21,8 @@ router.post("/register", userController.registerUser)
 router.post("/login", userController.login)
 
 //--------------------------Book Api----------------------------------
-router.post("/books", middleware.authentication, middleware.authoization, bookController.createBook)
+router.post("/books", middleware.authentication, middleware.authoization,uploadFile.uploadFile, bookController.createBook)
+
 router.get("/books", middleware.authentication, bookController.getBooks)
 router.get("/books/:bookId", middleware.authentication, bookController.getbookId)
 router.put("/books/:bookId", middleware.authentication, middleware.authoization, bookController.updateBooks)
@@ -24,6 +33,7 @@ router.delete("/books/:bookId", middleware.authentication, middleware.authoizati
 router.post("/books/:bookId/review", reviewController.createReviews)
 router.put("/books/:bookId/review/:reviewId", reviewController.updateReviews)
 router.delete("/books/:bookId/review/:reviewId", reviewController.deleteReview)
+
 
 
 
