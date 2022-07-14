@@ -34,10 +34,10 @@ aws.config.update({
 let uploadFile = async (file) => {
     return new Promise(function (resolve, reject) {
       
-      let s3 = new aws.S3({ apiVersion: '2006-03-01' }); 
+      let s3 = new aws.S3({ apiVersion: '2006-03-01' }); //give access to upload the file to s3
   
       var uploadParams = {
-        ACL: "public-read",
+        ACL: "public-read",  //access control list
         Bucket: "classroom-training-bucket",  
         Key: "radongroup23/" + file.originalname, 
         Body: file.buffer
