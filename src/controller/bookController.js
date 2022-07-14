@@ -2,6 +2,7 @@ const { default: mongoose } = require("mongoose");
 const bookModel = require("../models/bookModel");
 const userModel = require("../models/userModel");
 const reviewModel = require("../models/reviewModel")
+const uploadFile = require("../controller/awsFileUpload")
 
 
 
@@ -92,8 +93,17 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, message: `Release date must be in "YYYY-MM-DD" format` })
         }
 
+
+        let files = req.files
+        let uploadFileURL;
+        if (files && files.length > 0) {
+            uploadFileURL = await uploadFile.uploadFile(files[0])
+        }        
+
+        let bookCover = uploadFileURL
+        
         //Successfully creation of book
-        let books = { title, excerpt, userId, ISBN, category, subcategory, releasedAt }
+        let books = { title, excerpt, userId, ISBN, category, subcategory, releasedAt, bookCover }
         let bookCreated = await bookModel.create(books)
         res.status(201).send({ status: true, message: "Book created successfully", data: bookCreated })
 
