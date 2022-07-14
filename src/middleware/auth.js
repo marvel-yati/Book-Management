@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 
 //===================================== Authentication ==========================================
 
-const authentication = async function (req, res, next) {
+const authentication = function (req, res, next) {
     try {
         const token = req.header('x-api-key')
         if (!token) {
@@ -29,7 +29,7 @@ const authentication = async function (req, res, next) {
 
 //===================================== Authorization ==========================================
 
-const authoization = function (req, res, next) {
+const authoization = async function (req, res, next) {
     try {
         let token = req.header('x-api-key')
         let bookId = req.params.bookId
