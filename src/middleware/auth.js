@@ -25,8 +25,8 @@ const authentication = function (req, res, next) {
         res.status(500).send({ status: false, message: err.message })
     }
 }
-
-
+//cookies(credentials stored)
+//SESSION
 //===================================== Authorization ==========================================
 
 const authoization = async function (req, res, next) {

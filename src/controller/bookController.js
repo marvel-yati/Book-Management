@@ -94,21 +94,24 @@ const createBook = async function (req, res) {
         }
 
         //upload book cover(a file) by aws
-        let files = req.files
-        let uploadFileURL;
-        if (files && files.length > 0) {
-            uploadFileURL = await uploadFile.uploadFile(files[0])
-        }
-        else{
-            return res.status(400).send({message: "Please add book cover"})
-        }
+        // let files = req.files
+        // let uploadFileURL;
+        // if (files && files.length > 0) {
+        //     uploadFileURL = await uploadFile.uploadFile(files[0])
+        // }
+        // else{
+        //     return res.status(400).send({message: "Please add book cover"})
+        // }
 
-        let bookCover = uploadFileURL
+        // let bookCover = uploadFileURL
 
         //Successfully creation of book
-        let books = { title, excerpt, userId, ISBN, category, subcategory, releasedAt, bookCover }
+        let books = { title, excerpt, userId, ISBN, category, subcategory, releasedAt}
         let bookCreated = await bookModel.create(books)
         res.status(201).send({ status: true, message: "Book created successfully", data: bookCreated })
+
+        // let pri = await bookModel.find({title:"On the Nature of Love"}).count()
+        // console.log(pri)
 
     } catch (err) {
         console.log(err.message)
@@ -129,6 +132,28 @@ const getBooks = async function (req, res) {
                 return res.status(400).send({ status: false, msg: "Please Enter a valid userID" })
             }
         }
+        // let a = await bookModel.find({$and:[{category: "Novel"},{subcategory:"Novel"}]})//AND
+        // console.log(a)
+        // let pri = await bookModel
+        // .find({$or:[{category:"Novel"}, {subcategory:"Novel"}]})//OR
+        // .select({title : 1,bookCover : 1,_id:0})//.count()
+        // console.log(pri)
+
+        // let b = await bookModel.find().sort({"ISBN": -1})//SORT
+        // console.log(b)
+
+        // let c = await bookModel.find().sort({"ISBN": 1}).skip(3).limit(3).select({category: 1, subcategory: 1})
+        // console.log(c)
+
+        // let d = await bookModel.find({"title": {$eq: "Choke Bali"}})
+        // console.log(d)
+
+        // let e = await bookModel.find({"ISBN": {$lt: "01956214875" }})
+        // console.log(e)
+
+        let f = await bookModel.find({$or : [{category:{$eq : "Nature"}},{category :{$eq : "Novel"}}]})
+        console.log(f)
+
         const bookDetail = await bookModel
             .find({ $and: [data, { isDeleted: false }] })
             .select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 })
@@ -142,8 +167,9 @@ const getBooks = async function (req, res) {
             return res.status(200).send({ status: true, message: "Books List", data: bookDetail });
         }
         else {
-            return res.status(404).send({ status: false, message: "No Book found" })
+            res.status(404).send({ status: false, message: "No Book found" })
         }
+        
     }
     catch (err) {
         res.status(500).send({ status: false, msg: err.message });
@@ -254,11 +280,28 @@ const deleteBook = async function (req, res) {
     try {
         let bookId = req.params.bookId;
 
+        // let a = await bookModel.find({ISBN: {$nin:[ 975, 990 ]}})
+        // console.log(a)
+
+        // let b = await bookModel.findById("636292d3ead1de7ee62606f0")
+        // console.log(b)
+
+        // let c = await bookModel.findOne({category:"Novel"})
+        // console.log(c)
+
+        // let d = await bookModel.findByIdAndUpdate({_id : "62d048afcf8b77d572f5f547"},{ $set : { isDeleted: true}})
+        // console.log(d)
+
+        let e = await bookModel.updateMany({category: "Novel"}, {$set: {reviews: 1}})
+        console.log(e)
+
         let book = await bookModel.findOne({ _id: bookId, isDeleted: false })
         if (!book) { return res.status(404).send({ status: false, message: "book does not exist" }) }
 
         await bookModel.updateMany({ _id: bookId, isDeleted: false }, { $set: { isDeleted: true, deletedAt: new Date() } })
         await reviewModel.updateMany({ bookId: bookId }, ({ $set: { isDeleted: true } }))
+
+        
 
         return res.status(200).send({ status: true, message: "Book deleted successfully" })
 
